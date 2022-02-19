@@ -66,12 +66,24 @@ def gen_primes(n_bits):
             prime_counter -= 1
             prime_list.append(prime_candidate)
 
+        # Make sure we have 2 * n_bits as total bit length
+        if len(prime_list) == 2:
+            N = prime_list[0] * prime_list[1]
+            if N.bit_length() != 2 * n_bits:
+                prime_counter = 2
+                prime_list = []
+                # Mission failed, search for two new primes
+                continue
+
     return prime_list
 
 
 def main():
     p, q = gen_primes(1024)
     N = p * q
+    print(p)
+    print(q)
+    print(N.bit_length())
 
 if __name__ == "__main__":
     main()
