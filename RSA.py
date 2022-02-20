@@ -1,3 +1,4 @@
+import math
 import secrets
 
 
@@ -78,12 +79,69 @@ def gen_primes(n_bits):
     return prime_list
 
 
+e = 35537
+
+
+def encrypt(message, N):
+    b = bytearray()
+    b.extend(map(ord, message))
+    big_int = int.from_bytes(b, "big")
+    ciphertext = pow(big_int, e, N)
+    return ciphertext, len(b)
+
+
+def decrypt(ciphertext, b, d, N):
+    message = pow(ciphertext, d, N)
+    bytes_val = message.to_bytes(b, "big")
+    original_m = bytes_val.decode()
+    return original_m
+
+
+# Recursive extended euclidean algorithm
+# Returns (d,x,y) such that d=gcd(a,b) and d=x * a + y * b
+def extended_euclidean(a, b):
+    # Base case
+    # since a is 0, we know d, x and y
+    if a == 0:
+        # Returns d, x, y
+        return b, 0, 1
+    else:
+        # We keep calling until we reach the base case
+        # Same idea like the normal euclidean algorithm, write b in terms of a
+        # b = (b // a) * a + (b % a)
+        gcd, x1, y1 = extended_euclidean(b % a, a)
+
+        # Base case triggered, now moving backwards
+        # (b % a) = b - (b // a) * a
+        x = y1 - (b // a) * x1
+        y = x1
+        return gcd, x, y
+
+
 def main():
+    # Generate primes p and q, each of n/2 bits
     p, q = gen_primes(1024)
+
+    # N has length n bits
     N = p * q
-    print(p)
-    print(q)
-    print(N.bit_length())
+
+    # Euler's Totient function. It counts the amount of numbers in Z_N (all numbers between 0 and N-1)
+    # where the greatest common divisor with N is 1, in other words gcd(x,N) = 1
+    phi_n = (p - 1) * (q - 1)
+
+    c, b = encrypt("Hello World!", N)
+
+    # Make sure e and phi(n) are relatively prime/coprime otherwise we cannot encrypt/decrypt properly
+    assert math.gcd(e, phi_n) == 1
+
+    # e * d = 1 mod phi(n)
+    # Use extended euclidean algorithm to find d
+    _, d, _ = extended_euclidean(e, phi_n)
+
+    print(decrypt(c, b, d, N))
+
+
+
 
 if __name__ == "__main__":
     main()
