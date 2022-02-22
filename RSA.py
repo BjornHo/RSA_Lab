@@ -79,22 +79,14 @@ def gen_primes(n_bits):
     return prime_list
 
 
-e = 35537
+def encrypt(message, e, N):
+    ciphertext = pow(message, e, N)
+    return ciphertext
 
 
-def encrypt(message, N):
-    b = bytearray()
-    b.extend(map(ord, message))
-    big_int = int.from_bytes(b, "big")
-    ciphertext = pow(big_int, e, N)
-    return ciphertext, len(b)
-
-
-def decrypt(ciphertext, b, d, N):
+def decrypt(ciphertext, d, N):
     message = pow(ciphertext, d, N)
-    bytes_val = message.to_bytes(b, "big")
-    original_m = bytes_val.decode()
-    return original_m
+    return message
 
 
 # Recursive extended euclidean algorithm
@@ -127,6 +119,8 @@ def RSA_test1():
     # N has length n bits
     N = p * q
 
+    e = 35537
+
     # Euler's Totient function. It counts the amount of numbers in Z_N (all numbers between 0 and N-1)
     # where the greatest common divisor with N is 1, in other words gcd(x,N) = 1
     phi_n = (p - 1) * (q - 1)
@@ -136,12 +130,13 @@ def RSA_test1():
     print("N = " + str(N))
     print("phi(n) = " + str(phi_n))
 
-    m = "Hello World"
+    m = 888899990
 
     print("m = " + str(m))
     print("Encrypting...")
 
-    c, b = encrypt(m, N)
+
+    c = encrypt(m, e, N)
 
     print("c = " + str(c))
     # Make sure e and phi(n) are relatively prime/coprime otherwise we cannot encrypt/decrypt properly
@@ -154,16 +149,43 @@ def RSA_test1():
     print("d = " + str(d))
     print("Decrypting...")
 
-    original_m = decrypt(c, b, d, N)
+    original_m = decrypt(c, d, N)
 
     print("m = " + str(original_m))
     print("Done")
+
+
+def common_modulus():
+    # Generate primes p and q, each of n/2 bits
+    p, q = gen_primes(1024)
+
+    # N has length n bits
+    N = p * q
+
+    e_Alice = 3
+    e_Bob = 7
+
+    # gcd(e_Alice, e_Bob) = 1
+    # e_Alice * s_1 + e_Bob * s_2 = 1
+
+    _, s_1, s_2 = extended_euclidean(e_Alice, e_Bob)
+
+    m = 1234567890
+    c_Alice = encrypt(m, e_Alice, N)
+    c_Bob = encrypt(m, e_Bob, N)
+
+    # (c_Alice ^ s_1) * (c_Bob ^ s_2) = ((m^e_Alice)^s_1) * ((m^e_Bob)^s_2) = m^(e_Alice * s_1 + e_Bob * s_2) = m
+    constructed_m = int(pow(c_Alice, s_1) * pow(c_Bob, s_2))
+    print(constructed_m)
+
+
 
 
 
 
 def main():
     RSA_test1()
+    common_modulus()
 
 
 if __name__ == "__main__":
