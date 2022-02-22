@@ -113,12 +113,14 @@ def extended_euclidean(a, b):
 
         # Base case triggered, now moving backwards
         # (b % a) = b - (b // a) * a
+        # x1 * (b % a ) + y1 * a
         x = y1 - (b // a) * x1
         y = x1
         return gcd, x, y
 
 
-def main():
+def RSA_test1():
+    print("Running Test 1")
     # Generate primes p and q, each of n/2 bits
     p, q = gen_primes(1024)
 
@@ -129,8 +131,19 @@ def main():
     # where the greatest common divisor with N is 1, in other words gcd(x,N) = 1
     phi_n = (p - 1) * (q - 1)
 
-    c, b = encrypt("Hello World!", N)
+    print("p = " + str(p))
+    print("q = " + str(q))
+    print("N = " + str(N))
+    print("phi(n) = " + str(phi_n))
 
+    m = "Hello World"
+
+    print("m = " + str(m))
+    print("Encrypting...")
+
+    c, b = encrypt(m, N)
+
+    print("c = " + str(c))
     # Make sure e and phi(n) are relatively prime/coprime otherwise we cannot encrypt/decrypt properly
     assert math.gcd(e, phi_n) == 1
 
@@ -138,9 +151,19 @@ def main():
     # Use extended euclidean algorithm to find d
     _, d, _ = extended_euclidean(e, phi_n)
 
-    print(decrypt(c, b, d, N))
+    print("d = " + str(d))
+    print("Decrypting...")
+
+    original_m = decrypt(c, b, d, N)
+
+    print("m = " + str(original_m))
+    print("Done")
 
 
+
+
+def main():
+    RSA_test1()
 
 
 if __name__ == "__main__":
