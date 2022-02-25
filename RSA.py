@@ -163,7 +163,7 @@ def common_modulus():
     N = p * q
 
     e_Alice = 3
-    e_Bob = 7
+    e_Bob = 35537
 
     # gcd(e_Alice, e_Bob) = 1
     # e_Alice * s_1 + e_Bob * s_2 = 1
@@ -175,7 +175,7 @@ def common_modulus():
     c_Bob = encrypt(m, e_Bob, N)
 
     # (c_Alice ^ s_1) * (c_Bob ^ s_2) = ((m^e_Alice)^s_1) * ((m^e_Bob)^s_2) = m^(e_Alice * s_1 + e_Bob * s_2) = m
-    constructed_m = int(pow(c_Alice, s_1) * pow(c_Bob, s_2))
+    constructed_m = pow(c_Alice, s_1, N) * pow(c_Bob, s_2, N)
     print(constructed_m)
 
 
