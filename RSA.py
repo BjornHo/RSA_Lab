@@ -110,6 +110,26 @@ def extended_euclidean(a, b):
         y = x1
         return gcd, x, y
 
+# Iterative approach
+# Returns (d,x,y) such that d=gcd(a,b) and d=x * a + y * b
+def extended_euclidean_v2(a, b):
+    previous_x = 1
+    x = 0
+    previous_y = 0
+    y = 1
+
+    # b > 0
+    while b:
+        q = a//b
+        # Saving the previous x and y coefficients
+        # Python evaluates right side fully before assigning the values to the left
+        x, previous_x = previous_x - q * x, x
+        y, previous_y = previous_y - q * y, y
+
+        # GCD
+        a, b = b, a % b
+    return a, previous_x, previous_y
+
 
 def RSA_test1():
     print("Running Test 1")
@@ -144,7 +164,7 @@ def RSA_test1():
 
     # e * d = 1 mod phi(n)
     # Use extended euclidean algorithm to find d
-    _, d, _ = extended_euclidean(e, phi_n)
+    _, d, _ = extended_euclidean_v2(e, phi_n)
 
     print("d = " + str(d))
     print("Decrypting...")
@@ -168,7 +188,7 @@ def common_modulus():
     # gcd(e_Alice, e_Bob) = 1
     # e_Alice * s_1 + e_Bob * s_2 = 1
 
-    _, s_1, s_2 = extended_euclidean(e_Alice, e_Bob)
+    _, s_1, s_2 = extended_euclidean_v2(e_Alice, e_Bob)
 
     m = 1234567890
     c_Alice = encrypt(m, e_Alice, N)
@@ -182,6 +202,8 @@ def common_modulus():
 # Chinese Remainder Theorem
 # x = b_1 mod n_1
 # x = b_2 mod n_2
+# x = b_i mod n_i etc.
+# Find x.
 def CRT(list_n_i, list_b_i):
     # Calculate N which is the product of all elements in list_n_i
     N = 1
@@ -191,13 +213,15 @@ def CRT(list_n_i, list_b_i):
     # Calculate N_i = N/n_i
     list_N_i = []
     for n_i in list_n_i:
-        list_N_i.append(int(N/n_i))
+        list_N_i.append(N//n_i)
 
     # Calculate x_i, which is the inverse of N_i
     list_x_i = []
     j = 0
     for N_i in list_N_i:
-        _, x_i, _ = extended_euclidean(N_i, list_n_i[j])
+        gcd, x_i, _ = extended_euclidean_v2(N_i, list_n_i[j])
+        if gcd != 1:
+            raise ValueError("There was a problem, the input " + str(N_i) + "," + str(list_n_i[j]) + " was not coprime")
         list_x_i.append(x_i)
         j += 1
 
@@ -217,9 +241,6 @@ def Hastad_BC_Attack():
     p, q = gen_primes(1024)
     n_1 = p * q
     e_party1 = 3
-    phi_n1 = (p - 1) * (q - 1)
-    _, d_party1, _ = extended_euclidean(e_party1, phi_n1)
-
     c_1 = encrypt(m, e_party1, n_1)
 
     # Party 2
@@ -227,9 +248,6 @@ def Hastad_BC_Attack():
     p, q = gen_primes(1024)
     n_2 = p * q
     e_party2 = 3
-    phi_n2 = (p - 1) * (q - 1)
-    _, d_party2, _ = extended_euclidean(e_party2, phi_n2)
-
     c_2 = encrypt(m, e_party2, n_2)
 
     # Party 3
@@ -237,9 +255,6 @@ def Hastad_BC_Attack():
     p, q = gen_primes(1024)
     n_3 = p * q
     e_party3 = 3
-    phi_n3 = (p - 1) * (q - 1)
-    _, d_party3, _ = extended_euclidean(e_party3, phi_n3)
-
     c_3 = encrypt(m, e_party3, n_3)
 
     # c_1 = m^3 mod N_1
@@ -247,6 +262,14 @@ def Hastad_BC_Attack():
     # c_3 = m^3 mod N_3
 
     # Assume gcd(N_i, N_j) not equal to 1, otherwise factorization is possible
+    list_n_i = [n_1, n_2, n_3]
+    list_c_i = [c_1, c_2, c_3]
+
+    # Use CRT to determine m^3
+    print(list_n_i)
+    result = CRT(list_n_i, list_c_i)
+    print(round(pow(result, 1/3)))
+
 
 
 
@@ -267,9 +290,10 @@ def CRT_Test():
 def main():
     #RSA_test1()
     #common_modulus()
-    #Hastad_BC_Attack()
+    Hastad_BC_Attack()
 
-    CRT_Test()
+    #CRT_Test()
+
 
 
 
