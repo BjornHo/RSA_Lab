@@ -163,7 +163,7 @@ def common_modulus():
     N = p * q
 
     e_Alice = 3
-    e_Bob = 35537
+    e_Bob = 7
 
     # gcd(e_Alice, e_Bob) = 1
     # e_Alice * s_1 + e_Bob * s_2 = 1
@@ -175,17 +175,106 @@ def common_modulus():
     c_Bob = encrypt(m, e_Bob, N)
 
     # (c_Alice ^ s_1) * (c_Bob ^ s_2) = ((m^e_Alice)^s_1) * ((m^e_Bob)^s_2) = m^(e_Alice * s_1 + e_Bob * s_2) = m
-    constructed_m = pow(c_Alice, s_1, N) * pow(c_Bob, s_2, N)
-    print(constructed_m)
+    constructed_m = pow(c_Alice, s_1) * pow(c_Bob, s_2)
+    print(int(constructed_m))
+
+
+# Chinese Remainder Theorem
+# x = b_1 mod n_1
+# x = b_2 mod n_2
+def CRT(list_n_i, list_b_i):
+    # Calculate N which is the product of all elements in list_n_i
+    N = 1
+    for element in list_n_i:
+        N *= element
+
+    # Calculate N_i = N/n_i
+    list_N_i = []
+    for n_i in list_n_i:
+        list_N_i.append(int(N/n_i))
+
+    # Calculate x_i, which is the inverse of N_i
+    list_x_i = []
+    j = 0
+    for N_i in list_N_i:
+        _, x_i, _ = extended_euclidean(N_i, list_n_i[j])
+        list_x_i.append(x_i)
+        j += 1
+
+    # Calculate x = sum (b_i * N_i * x_i) mod N
+    x = 0
+    for k in range(len(list_n_i)):
+        x += list_b_i[k] * list_N_i[k] * list_x_i[k]
+
+    return x % N
+
+
+def Hastad_BC_Attack():
+    m = 1337
+
+    # Party 1
+    # Generate primes p and q, each of n/2 bits
+    p, q = gen_primes(1024)
+    n_1 = p * q
+    e_party1 = 3
+    phi_n1 = (p - 1) * (q - 1)
+    _, d_party1, _ = extended_euclidean(e_party1, phi_n1)
+
+    c_1 = encrypt(m, e_party1, n_1)
+
+    # Party 2
+    # Generate primes p and q, each of n/2 bits
+    p, q = gen_primes(1024)
+    n_2 = p * q
+    e_party2 = 3
+    phi_n2 = (p - 1) * (q - 1)
+    _, d_party2, _ = extended_euclidean(e_party2, phi_n2)
+
+    c_2 = encrypt(m, e_party2, n_2)
+
+    # Party 3
+    # Generate primes p and q, each of n/2 bits
+    p, q = gen_primes(1024)
+    n_3 = p * q
+    e_party3 = 3
+    phi_n3 = (p - 1) * (q - 1)
+    _, d_party3, _ = extended_euclidean(e_party3, phi_n3)
+
+    c_3 = encrypt(m, e_party3, n_3)
+
+    # c_1 = m^3 mod N_1
+    # c_2 = m^3 mod N_2
+    # c_3 = m^3 mod N_3
+
+    # Assume gcd(N_i, N_j) not equal to 1, otherwise factorization is possible
 
 
 
 
+
+def CRT_Test():
+    # x = 3 mod 5
+    # x = 1 mod 7
+    # x = 6 mod 8
+
+    list_n_i = [5, 7, 8]
+    list_b_i = [3, 1, 6]
+
+    assert (78 == CRT(list_n_i, list_b_i))
+    print("CRT Test success")
 
 
 def main():
-    RSA_test1()
-    common_modulus()
+    #RSA_test1()
+    #common_modulus()
+    #Hastad_BC_Attack()
+
+    CRT_Test()
+
+
+
+
+
 
 
 if __name__ == "__main__":
