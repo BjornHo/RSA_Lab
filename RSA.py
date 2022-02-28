@@ -1,6 +1,7 @@
 import math
 import secrets
 
+from mpmath import *
 
 # Miller Rabin Primality test
 # n = prime candidate
@@ -266,10 +267,8 @@ def Hastad_BC_Attack():
     list_c_i = [c_1, c_2, c_3]
 
     # Use CRT to determine m^3
-    print(list_n_i)
     result = CRT(list_n_i, list_c_i)
-    print(round(pow(result, 1/3)))
-
+    print(int(round(result**mpf(1/3))))
 
 
 
@@ -291,7 +290,6 @@ def main():
     #RSA_test1()
     #common_modulus()
     Hastad_BC_Attack()
-
     #CRT_Test()
 
 
