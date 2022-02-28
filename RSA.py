@@ -1,12 +1,19 @@
 import math
 import secrets
 
+import sympy
 from mpmath import *
+from sympy import Poly, solveset, GF
+from sympy.abc import x
+from sympy import monic
 
 # Miller Rabin Primality test
 # n = prime candidate
 # k = number of rounds
 # Returns true if probably prime, false for composite number
+
+
+
 def miller_rabin(n, k):
     if n == 1 or n == 2 or n == 3:
         return True
@@ -289,8 +296,113 @@ def CRT_Test():
 def main():
     #RSA_test1()
     #common_modulus()
-    Hastad_BC_Attack()
+    #Hastad_BC_Attack()
     #CRT_Test()
+
+
+
+    #g = Poly(6*x**4 + x, x, modulus=5)
+    #print(g+g)
+
+    #print(monic(3*x**2 + 4*x + 2))
+
+    from sympy import roots
+    from sympy import solve
+    from sympy import symbols
+    from sympy import latex
+
+    #x, y = symbols('x y')
+    #print(solve(x**2+x, x))
+
+
+
+
+    m = 1337
+
+    # Party 1
+    # Generate primes p and q, each of n/2 bits
+    p, q = gen_primes(1024)
+    n_1 = p * q
+    e_party1 = 3
+
+    a_1 = 1
+    b_1 = 2
+
+    # Apply padding m_i = a_i * m + b_i
+    m_1 = a_1 * m + b_1
+
+    c_1 = encrypt(m_1, e_party1, n_1)
+
+
+    # Party 2
+    # Generate primes p and q, each of n/2 bits
+    p, q = gen_primes(1024)
+    n_2 = p * q
+    e_party2 = 3
+
+    a_2 = 2
+    b_2 = 3
+
+    m_2 = a_2 * m + b_2
+
+    c_2 = encrypt(m_2, e_party2, n_2)
+
+    # Party 3
+    # Generate primes p and q, each of n/2 bits
+    p, q = gen_primes(1024)
+    n_3 = p * q
+    e_party3 = 3
+
+    a_3 = 3
+    b_3 = 4
+
+    m_3 = a_3 * m + b_3
+
+    c_3 = encrypt(m_3, e_party3, n_3)
+
+
+    # T_i = 1 (mod n_i)
+    # T_i = 0 (mod n_j!=i)
+
+    list_n1 = [n_1, n_2, n_3]
+    T_1 = CRT(list_n1, [1, 0, 0])
+
+    list_n2 = [n_2, n_1, n_3]
+    T_2 = CRT(list_n2, [1, 0, 0])
+
+    list_n3 = [n_3, n_1, n_2]
+    T_3 = CRT(list_n3, [1, 0, 0])
+
+    # Construct polynomial g
+    g_1 = Poly(T_1 * ((a_1 * x + b_1)**3 - c_1), x, modulus=n_1 * n_2 * n_3)
+    g_2 = Poly(T_2 * ((a_2 * x + b_2)**3 - c_2), x, modulus=n_1 * n_2 * n_3)
+    g_3 = Poly(T_3 * ((a_3 * x + b_3)**3 - c_3), x, modulus=n_1 * n_2 * n_3)
+
+    g = g_1 + g_2 + g_3
+
+    print(g(m))
+    print(g_1(m))
+    print(g_2(m))
+    print(g_3(m))
+    g = g.monic()
+    print(g)
+
+    for i in range(n_1):
+        if (g(i) == 0):
+            print(i)
+            break
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
