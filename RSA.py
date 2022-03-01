@@ -12,8 +12,6 @@ from sympy import monic
 # k = number of rounds
 # Returns true if probably prime, false for composite number
 
-
-
 def miller_rabin(n, k):
     if n == 1 or n == 2 or n == 3:
         return True
@@ -139,48 +137,6 @@ def extended_euclidean_v2(a, b):
     return a, previous_x, previous_y
 
 
-def RSA_test1():
-    print("Running Test 1")
-    # Generate primes p and q, each of n/2 bits
-    p, q = gen_primes(1024)
-
-    # N has length n bits
-    N = p * q
-
-    e = 35537
-
-    # Euler's Totient function. It counts the amount of numbers in Z_N (all numbers between 0 and N-1)
-    # where the greatest common divisor with N is 1, in other words gcd(x,N) = 1
-    phi_n = (p - 1) * (q - 1)
-
-    print("p = " + str(p))
-    print("q = " + str(q))
-    print("N = " + str(N))
-    print("phi(n) = " + str(phi_n))
-
-    m = 888899990
-
-    print("m = " + str(m))
-    print("Encrypting...")
-
-
-    c = encrypt(m, e, N)
-
-    print("c = " + str(c))
-    # Make sure e and phi(n) are relatively prime/coprime otherwise we cannot encrypt/decrypt properly
-    assert math.gcd(e, phi_n) == 1
-
-    # e * d = 1 mod phi(n)
-    # Use extended euclidean algorithm to find d
-    _, d, _ = extended_euclidean_v2(e, phi_n)
-
-    print("d = " + str(d))
-    print("Decrypting...")
-
-    original_m = decrypt(c, d, N)
-
-    print("m = " + str(original_m))
-    print("Done")
 
 
 def common_modulus():
@@ -281,20 +237,9 @@ def Hastad_BC_Attack():
 
 
 
-def CRT_Test():
-    # x = 3 mod 5
-    # x = 1 mod 7
-    # x = 6 mod 8
-
-    list_n_i = [5, 7, 8]
-    list_b_i = [3, 1, 6]
-
-    assert (78 == CRT(list_n_i, list_b_i))
-    print("CRT Test success")
 
 
 def main():
-    #RSA_test1()
     #common_modulus()
     #Hastad_BC_Attack()
     #CRT_Test()
@@ -380,18 +325,18 @@ def main():
 
     g = g_1 + g_2 + g_3
 
-    print(g(m))
-    print(g_1(m))
-    print(g_2(m))
-    print(g_3(m))
+    print(g)
     g = g.monic()
     print(g)
-
+    print(g.all_coeffs())
+    print(g(1337))
+    """"
     for i in range(n_1):
         if (g(i) == 0):
             print(i)
             break
 
+    """
 
 
 
