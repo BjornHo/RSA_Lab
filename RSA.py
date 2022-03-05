@@ -7,14 +7,13 @@ from sympy import Poly, solveset, GF
 from sympy.abc import x
 from sympy import monic
 
-
+# Party that is participating in the RSA game
+# (e,N) is the public key pair
+# d is the private key
 class party:
-    def __init__(self, p, q, e, d, phi_n, N):
-        self.p = p
-        self.q = q
+    def __init__(self, e, d, N):
         self.e = e
         self.d = d
-        self.phi_n = phi_n
         self.N = N
 
 
@@ -96,18 +95,30 @@ def gen_primes(n_bits):
     return prime_list
 
 def gen_Party(n_bits, e):
+
+    # Generate primes p and q, each of n/2 bits
     p, q = gen_primes(n_bits)
+
+    # N has length n bits
+    N = p * q
+
+    # Euler's Totient function. It counts the amount of numbers in Z_N (all numbers between 0 and N-1)
+    # where the greatest common divisor with N is 1, in other words gcd(x,N) = 1
     phi_n = (p-1) * (q-1)
 
+    # Make sure e and phi(n) are relatively prime/coprime otherwise we cannot encrypt/decrypt properly
     while math.gcd(e, phi_n) != 1:
         print("gcd(e, phi_n) was not 1, trying again")
         p, q = gen_primes(n_bits)
         phi_n = (p-1) * (q-1)
+        N = p * q
+    print("Found correct primes")
 
-
+    # e * d = 1 mod phi(n)
+    # Use extended euclidean algorithm to find d
     _, d, _ = extended_euclidean_v2(e, phi_n)
-    N = p * q
-    party_x = party(p, q, e, d, phi_n, N)
+
+    party_x = party(e, d, N)
     return party_x
 
 def encrypt(message, e, N):
