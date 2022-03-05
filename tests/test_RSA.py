@@ -65,38 +65,38 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(True, miller_rabin(prime_list[0], rounds))
         self.assertEqual(True, miller_rabin(prime_list[1], rounds))
 
-    def test_RSA_gen_party(self):
+    def test_RSA_gen_user(self):
         print("Running test_RSA_gen_party")
         print("------------------")
-        bits = 1024
+        bits = 2048
         e = 3
-        party_1 = gen_Party(bits, e)
+        user_1 = gen_user(bits, e)
         message = 4584848489
-        c = encrypt(message, party_1.e, party_1.N)
-        self.assertEqual(message, decrypt(c, party_1.d, party_1.N))
+        c = encrypt(message, user_1.e, user_1.N)
+        self.assertEqual(message, decrypt(c, user_1.d, user_1.N))
         print("------------------")
 
     def test_RSA_integrated(self):
         print("Running RSA integrated test")
         print("------------------")
 
-        bits = 1024
+        bits = 2048
         e = 65537
         message = 99887766
 
-        print("Party 1")
-        print("Using " + str(bits) + " bits for p and q")
+        print("User 1")
+        print("Using " + str(bits) + " bits")
         print("e = " + str(e))
 
-        party_1 = gen_Party(bits, e)
-        print("d = " + str(party_1.d))
+        user_1 = gen_user(bits, e)
+        print("d = " + str(user_1.d))
         print("message = " + str(message))
 
         print("Encrypting message " + str(message))
-        c = encrypt(message, party_1.e, party_1.N)
+        c = encrypt(message, user_1.e, user_1.N)
 
         print("Ciphertext = " + str(c))
-        decrypted_m = decrypt(c, party_1.d, party_1.N)
+        decrypted_m = decrypt(c, user_1.d, user_1.N)
 
         print("Decrypted text = " + str(decrypted_m))
 

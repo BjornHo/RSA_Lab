@@ -7,10 +7,10 @@ from sympy import Poly, solveset, GF
 from sympy.abc import x
 from sympy import monic
 
-# Party that is participating in the RSA game
+# A user that is participating in the RSA game
 # (e,N) is the public key pair
 # d is the private key
-class party:
+class user:
     def __init__(self, e, d, N):
         self.e = e
         self.d = d
@@ -94,10 +94,11 @@ def gen_primes(n_bits):
 
     return prime_list
 
-def gen_Party(n_bits, e):
-
+def gen_user(n_bits, e):
+    print("-------------------")
+    print("Generating user")
     # Generate primes p and q, each of n/2 bits
-    p, q = gen_primes(n_bits)
+    p, q = gen_primes(int(n_bits/2))
 
     # N has length n bits
     N = p * q
@@ -109,17 +110,23 @@ def gen_Party(n_bits, e):
     # Make sure e and phi(n) are relatively prime/coprime otherwise we cannot encrypt/decrypt properly
     while math.gcd(e, phi_n) != 1:
         print("gcd(e, phi_n) was not 1, trying again")
-        p, q = gen_primes(n_bits)
+        p, q = gen_primes(int(n_bits/2))
         phi_n = (p-1) * (q-1)
         N = p * q
-    print("Found correct primes")
+    print("Found matching primes, problem solved")
 
     # e * d = 1 mod phi(n)
     # Use extended euclidean algorithm to find d
     _, d, _ = extended_euclidean_v2(e, phi_n)
 
-    party_x = party(e, d, N)
-    return party_x
+    print("User generated")
+    print("p = " + str(p))
+    print("q = " + str(q))
+    print("N = " +str(N))
+    print("d = " + str(d))
+
+    user_x = user(e, d, N)
+    return user_x
 
 def encrypt(message, e, N):
     ciphertext = pow(message, e, N)
