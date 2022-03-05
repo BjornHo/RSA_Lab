@@ -65,51 +65,42 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(True, miller_rabin(prime_list[0], rounds))
         self.assertEqual(True, miller_rabin(prime_list[1], rounds))
 
+    def test_RSA_gen_party(self):
+        print("Running test_RSA_gen_party")
+        print("------------------")
+        bits = 1024
+        e = 3
+        party_1 = gen_Party(bits, e)
+        message = 4584848489
+        c = encrypt(message, party_1.e, party_1.N)
+        self.assertEqual(message, decrypt(c, party_1.d, party_1.N))
+        print("------------------")
+
     def test_RSA_integrated(self):
         print("Running RSA integrated test")
+        print("------------------")
 
-        # Generate primes p and q, each of n/2 bits
-        p, q = gen_primes(1024)
+        bits = 1024
+        e = 65537
+        message = 99887766
 
-        # N has length n bits
-        N = p * q
+        print("Party 1")
+        print("Using " + str(bits) + " bits for p and q")
+        print("e = " + str(e))
 
-        e = 35537
+        party_1 = gen_Party(bits, e)
+        print("d = " + str(party_1.d))
+        print("message = " + str(message))
 
-        # Euler's Totient function. It counts the amount of numbers in Z_N (all numbers between 0 and N-1)
-        # where the greatest common divisor with N is 1, in other words gcd(x,N) = 1
-        phi_n = (p - 1) * (q - 1)
+        print("Encrypting message " + str(message))
+        c = encrypt(message, party_1.e, party_1.N)
 
-        print("p = " + str(p))
-        print("q = " + str(q))
-        print("N = " + str(N))
-        print("phi(n) = " + str(phi_n))
+        print("Ciphertext = " + str(c))
+        decrypted_m = decrypt(c, party_1.d, party_1.N)
 
-        m = 888899990
+        print("Decrypted text = " + str(decrypted_m))
 
-        print("m = " + str(m))
-        print("Encrypting...")
-
-
-        c = encrypt(m, e, N)
-
-        print("c = " + str(c))
-
-        # Make sure e and phi(n) are relatively prime/coprime otherwise we cannot encrypt/decrypt properly
-        self.assertEqual(1, math.gcd(e, phi_n))
-
-        # e * d = 1 mod phi(n)
-        # Use extended euclidean algorithm to find d
-        _, d, _ = extended_euclidean_v2(e, phi_n)
-
-        print("d = " + str(d))
-        print("Decrypting...")
-
-        original_m = decrypt(c, d, N)
-
-        print("m = " + str(original_m))
-
-        self.assertEqual(m, original_m)
+        self.assertEqual(message, decrypted_m)
 
     def test_RSA_CRT(self):
         # x = 3 mod 5
