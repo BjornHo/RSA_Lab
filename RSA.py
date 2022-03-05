@@ -7,6 +7,17 @@ from sympy import Poly, solveset, GF
 from sympy.abc import x
 from sympy import monic
 
+
+class party:
+    def __init__(self, p, q, e, d, phi_n, N):
+        self.p = p
+        self.q = q
+        self.e = e
+        self.d = d
+        self.phi_n = phi_n
+        self.N = N
+
+
 # Miller Rabin Primality test
 # n = prime candidate
 # k = number of rounds
@@ -84,6 +95,20 @@ def gen_primes(n_bits):
 
     return prime_list
 
+def gen_Party(n_bits, e):
+    p, q = gen_primes(n_bits)
+    phi_n = (p-1) * (q-1)
+
+    while math.gcd(e, phi_n) != 1:
+        print("gcd(e, phi_n) was not 1, trying again")
+        p, q = gen_primes(n_bits)
+        phi_n = (p-1) * (q-1)
+
+
+    _, d, _ = extended_euclidean_v2(e, phi_n)
+    N = p * q
+    party_x = party(p, q, e, d, phi_n, N)
+    return party_x
 
 def encrypt(message, e, N):
     ciphertext = pow(message, e, N)
@@ -197,41 +222,6 @@ def CRT(list_n_i, list_b_i):
     return x % N
 
 
-def Hastad_BC_Attack():
-    m = 1337
-
-    # Party 1
-    # Generate primes p and q, each of n/2 bits
-    p, q = gen_primes(1024)
-    n_1 = p * q
-    e_party1 = 3
-    c_1 = encrypt(m, e_party1, n_1)
-
-    # Party 2
-    # Generate primes p and q, each of n/2 bits
-    p, q = gen_primes(1024)
-    n_2 = p * q
-    e_party2 = 3
-    c_2 = encrypt(m, e_party2, n_2)
-
-    # Party 3
-    # Generate primes p and q, each of n/2 bits
-    p, q = gen_primes(1024)
-    n_3 = p * q
-    e_party3 = 3
-    c_3 = encrypt(m, e_party3, n_3)
-
-    # c_1 = m^3 mod N_1
-    # c_2 = m^3 mod N_2
-    # c_3 = m^3 mod N_3
-
-    # Assume gcd(N_i, N_j) not equal to 1, otherwise factorization is possible
-    list_n_i = [n_1, n_2, n_3]
-    list_c_i = [c_1, c_2, c_3]
-
-    # Use CRT to determine m^3
-    result = CRT(list_n_i, list_c_i)
-    print(int(round(result**mpf(1/3))))
 
 
 
