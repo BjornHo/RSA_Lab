@@ -2,6 +2,7 @@
 
 
 import os,sys,inspect
+import secrets
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -38,8 +39,18 @@ class MyTestCase(unittest.TestCase):
 
         # Generate random padding for each user
         for _ in range(len(user_list)):
-            a = random.randint(0, 100)
-            b = random.randint(0, 100)
+            a = 0
+            b = 0
+
+            # Prevent using zero
+            while a == 0 or  b == 0:
+                a = secrets.randbelow(1000)
+                b = secrets.randbelow(1000)
+                print("printing a and b used for padding")
+                print(a)
+                print(b)
+
+            # Add to the lists
             a_list.append(a)
             b_list.append(b)
 
