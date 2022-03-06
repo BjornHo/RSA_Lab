@@ -9,5 +9,6 @@
 
 /__pycache__/
 /tests/__pycache__/
+/exploits/__pycache__/
 /.sage/
 /.ccache/

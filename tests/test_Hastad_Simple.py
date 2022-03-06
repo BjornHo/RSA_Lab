@@ -1,6 +1,6 @@
 import unittest
 from RSA import *
-from exploits.Hastad_Simple import Hastad_BC_Simple
+from exploits.Hastad_Simple import Hastad_BCA_Simple
 
 
 class MyTestCase(unittest.TestCase):
@@ -23,7 +23,7 @@ class MyTestCase(unittest.TestCase):
             modulus_list.append(user_i.N)
 
         print("Message: " + str(message) + " is encrypted for all receivers")
-        result = Hastad_BC_Simple(ciphertext_list, modulus_list, e)
+        result = Hastad_BCA_Simple(ciphertext_list, modulus_list, e)
         self.assertEqual(message, result)
         print("Message found: " + str(result))
         print("Hastad BCA Simple was successful")
