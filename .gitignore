@@ -8,3 +8,6 @@
 /dataSources.local.xml
 
 /__pycache__/
+/tests/__pycache__/
+/.sage/
+/.ccache/
