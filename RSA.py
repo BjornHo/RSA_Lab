@@ -128,6 +128,59 @@ def gen_user(n_bits, e):
     user_x = user(e, d, N)
     return user_x
 
+# Checks if all elements in list_e and phi_n are coprime
+# Helper to create users for common modulus attack
+def are_coprime(e_list, phi_n):
+    for current_e in e_list:
+        if math.gcd(current_e, phi_n) != 1:
+            return False
+    return True
+
+# We want users with the same P and Q to get the same modulus
+# This is for the common modulus attack
+def gen_users_sameMod(n_bits, number_users, e_list):
+    print("-------------------")
+    print("Generating users with same modulus")
+    # Generate primes p and q, each of n/2 bits
+    p, q = gen_primes(int(n_bits/2))
+
+    # N has length n bits
+    N = p * q
+
+    # Euler's Totient function. It counts the amount of numbers in Z_N (all numbers between 0 and N-1)
+    # where the greatest common divisor with N is 1, in other words gcd(x,N) = 1
+    phi_n = (p-1) * (q-1)
+
+    # Make sure e and phi(n) are relatively prime/coprime otherwise we cannot encrypt/decrypt properly
+    # Small change from gen_user is that all in e_list should have this property
+    while not are_coprime(e_list, phi_n):
+        print("gcd(e, phi_n) was not 1, trying again")
+        p, q = gen_primes(int(n_bits/2))
+        N = p * q
+        phi_n = (p-1) * (q-1)
+
+    print("Found matching primes, problem solved")
+
+    user_list = []
+
+    # Create users with same Modulus
+    for i in range(number_users):
+        # e * d = 1 mod phi(n)
+        # Use extended euclidean algorithm to find d_i
+        _, d_i, _ = extended_euclidean_v2(e_list[i], phi_n)
+        user_i = user(e_list[i], d_i, N)
+        user_list.append(user_i)
+        print("-------------")
+        print("User " + str(i) + " created")
+        print("e = " + str(user_i.e))
+        print("d = " + str(user_i.d))
+        print("N = " + str(user_i.N))
+
+    return user_list
+
+
+
+
 def encrypt(message, e, N):
     ciphertext = pow(message, e, N)
     return ciphertext
@@ -179,33 +232,6 @@ def extended_euclidean_v2(a, b):
         a, b = b, a % b
     return a, previous_x, previous_y
 
-
-
-
-def common_modulus():
-    # Generate primes p and q, each of n/2 bits
-    p, q = gen_primes(1024)
-
-    # N has length n bits
-    N = p * q
-
-    e_Alice = 3
-    e_Bob = 7
-
-    # gcd(e_Alice, e_Bob) = 1
-    # e_Alice * s_1 + e_Bob * s_2 = 1
-
-    _, s_1, s_2 = extended_euclidean_v2(e_Alice, e_Bob)
-
-    m = 1234567890
-    c_Alice = encrypt(m, e_Alice, N)
-    c_Bob = encrypt(m, e_Bob, N)
-
-    # (c_Alice ^ s_1) * (c_Bob ^ s_2) = ((m^e_Alice)^s_1) * ((m^e_Bob)^s_2) = m^(e_Alice * s_1 + e_Bob * s_2) = m
-    constructed_m = pow(c_Alice, s_1) * pow(c_Bob, s_2)
-    print(int(constructed_m))
-
-
 # Chinese Remainder Theorem
 # x = b_1 mod n_1
 # x = b_2 mod n_2
@@ -248,109 +274,7 @@ def CRT(list_n_i, list_b_i):
 
 
 def main():
-    #common_modulus()
-    #Hastad_BC_Attack()
-    #CRT_Test()
-
-
-
-    #g = Poly(6*x**4 + x, x, modulus=5)
-    #print(g+g)
-
-    #print(monic(3*x**2 + 4*x + 2))
-
-    from sympy import roots
-    from sympy import solve
-    from sympy import symbols
-    from sympy import latex
-
-    #x, y = symbols('x y')
-    #print(solve(x**2+x, x))
-
-
-
-
-    m = 1337
-
-    # Party 1
-    # Generate primes p and q, each of n/2 bits
-    p, q = gen_primes(1024)
-    n_1 = p * q
-    e_party1 = 3
-
-    a_1 = 1
-    b_1 = 2
-
-    # Apply padding m_i = a_i * m + b_i
-    m_1 = a_1 * m + b_1
-
-    c_1 = encrypt(m_1, e_party1, n_1)
-
-
-    # Party 2
-    # Generate primes p and q, each of n/2 bits
-    p, q = gen_primes(1024)
-    n_2 = p * q
-    e_party2 = 3
-
-    a_2 = 2
-    b_2 = 3
-
-    m_2 = a_2 * m + b_2
-
-    c_2 = encrypt(m_2, e_party2, n_2)
-
-    # Party 3
-    # Generate primes p and q, each of n/2 bits
-    p, q = gen_primes(1024)
-    n_3 = p * q
-    e_party3 = 3
-
-    a_3 = 3
-    b_3 = 4
-
-    m_3 = a_3 * m + b_3
-
-    c_3 = encrypt(m_3, e_party3, n_3)
-
-
-    # T_i = 1 (mod n_i)
-    # T_i = 0 (mod n_j!=i)
-
-    list_n1 = [n_1, n_2, n_3]
-    T_1 = CRT(list_n1, [1, 0, 0])
-
-    list_n2 = [n_2, n_1, n_3]
-    T_2 = CRT(list_n2, [1, 0, 0])
-
-    list_n3 = [n_3, n_1, n_2]
-    T_3 = CRT(list_n3, [1, 0, 0])
-
-    # Construct polynomial g
-    g_1 = Poly(T_1 * ((a_1 * x + b_1)**3 - c_1), x, modulus=n_1 * n_2 * n_3)
-    g_2 = Poly(T_2 * ((a_2 * x + b_2)**3 - c_2), x, modulus=n_1 * n_2 * n_3)
-    g_3 = Poly(T_3 * ((a_3 * x + b_3)**3 - c_3), x, modulus=n_1 * n_2 * n_3)
-
-    g = g_1 + g_2 + g_3
-
-    print(g)
-    g = g.monic()
-    print(g)
-    print(g.all_coeffs())
-    print(g(1337))
-    """"
-    for i in range(n_1):
-        if (g(i) == 0):
-            print(i)
-            break
-
-    """
-
-
-
-
-
-
+    pass
 
 
 
