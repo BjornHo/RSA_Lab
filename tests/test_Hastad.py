@@ -3,6 +3,8 @@
 
 import os,sys,inspect
 
+from gmpy2 import mpz
+
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
@@ -17,6 +19,9 @@ from sage.all import *
 class MyTestCase(unittest.TestCase):
 
     def test_Hastad_BCA(self):
+        # Start measuring time
+        start_time_setup = time.time()
+
         # Public linear padding function
         #f(a_i,m,b_i) = a_i * m + b_i
         __tmp__=var("a_i,m_i,b_i");f = symbolic_expression(a_i * m_i + b_i).function(a_i,m_i,b_i)
@@ -27,9 +32,9 @@ class MyTestCase(unittest.TestCase):
         n_list = []
         c_list = []
 
-        e = 3
         message = 1337
-        num_users = 3
+        e = 3
+        num_users = 4
 
         # Generate users
         for _ in range(num_users):
@@ -70,13 +75,27 @@ class MyTestCase(unittest.TestCase):
             c_list.append(c)
             i += 1
 
+        # End measuring time
+        end_time_setup = time.time()
+
+        # Start measuring time
+        start_time_attack = time.time()
+
         # Pass on list of a, b, ciphertexts of each user and modulus of each user
         # And perform the Hastad Broadcast Attack
         result = Hastad_BCA(a_list, b_list, c_list, n_list, e)
 
         self.assertEqual(message, result)
+
+        # End measuring time
+        end_time_attack = time.time()
+
+        print("Time elapsed for setup: " + str(end_time_setup - start_time_setup) + " seconds")
+        print("Time elapsed for attack itself: " + str(end_time_attack - start_time_attack) + " seconds")
+
         print("Hastad Broadcast Attack Successful")
         print("The secret message is: " + str(result))
+
 
 
 if __name__ == '__main__':

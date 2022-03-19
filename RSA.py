@@ -1,5 +1,7 @@
+import binascii
 import math
 import secrets
+import time
 
 import sympy
 from mpmath import *
@@ -97,6 +99,10 @@ def gen_primes(n_bits):
 def gen_user(n_bits, e):
     print("-------------------")
     print("Generating user")
+
+    # Start measuring time
+    start_time = time.time()
+
     # Generate primes p and q, each of n/2 bits
     p, q = gen_primes(int(n_bits/2))
 
@@ -109,7 +115,7 @@ def gen_user(n_bits, e):
 
     # Make sure e and phi(n) are relatively prime/coprime otherwise we cannot encrypt/decrypt properly
     while math.gcd(e, phi_n) != 1:
-        print("gcd(e, phi_n) was not 1, trying again")
+        #print("gcd(e, phi_n) was not 1, trying again")
         p, q = gen_primes(int(n_bits/2))
         phi_n = (p-1) * (q-1)
         N = p * q
@@ -124,6 +130,11 @@ def gen_user(n_bits, e):
     print("q = " + str(q))
     print("N = " +str(N))
     print("d = " + str(d))
+
+    # End measuring time
+    end_time = time.time()
+
+    print("Time elapsed: " + str(end_time - start_time) + " seconds")
 
     user_x = user(e, d, N)
     return user_x
@@ -177,8 +188,6 @@ def gen_users_sameMod(n_bits, number_users, e_list):
         print("N = " + str(user_i.N))
 
     return user_list
-
-
 
 
 def encrypt(message, e, N):
