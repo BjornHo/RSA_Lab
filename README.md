@@ -16,10 +16,10 @@ and give errors if you use the normal Python interpreter.
 
 
 ### To run the Hastad test:
-Open up a Sage shell and use `python -m unittest test_Hastad`
+Open up a Sage shell and use `python3 -m unittest test_Hastad`
 
 ### To run the Franklin-Reiter test:
-Open up a Sage shell and use `python -m unittest test_Franklin_Reiter.py`
+Open up a Sage shell and use `python3 -m unittest test_Franklin_Reiter.py`
 
 ### To run the other tests:
 You can simply use an IDE that supports Python (I used intellij with Python plugin), and run the unit tests in the

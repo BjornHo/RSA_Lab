@@ -33,8 +33,8 @@ class MyTestCase(unittest.TestCase):
         c_list = []
 
         message = 1337
-        e = 3
-        num_users = 4
+        e = 13
+        num_users = 14
 
         # Generate users
         for _ in range(num_users):
@@ -50,9 +50,9 @@ class MyTestCase(unittest.TestCase):
             while a == 0 or  b == 0:
                 a = secrets.randbelow(1000)
                 b = secrets.randbelow(1000)
-                print("printing a and b used for padding")
-                print(a)
-                print(b)
+                # print("printing a and b used for padding")
+                # print(a)
+                # print(b)
 
             # Add to the lists
             a_list.append(a)
@@ -67,10 +67,10 @@ class MyTestCase(unittest.TestCase):
         for user_i in user_list:
             # Use the linear padding function and pad the message
             padded_message = int(f(a_list[i], message, b_list[i]))
-            print("----------------")
-            print("User: " + str(i))
-            print("Padded msg is: " + str(padded_message))
-            print("Encrypting...")
+            # print("----------------")
+            # print("User: " + str(i))
+            # print("Padded msg is: " + str(padded_message))
+            # print("Encrypting...")
             c = encrypt(padded_message, e, user_i.N)
             c_list.append(c)
             i += 1
@@ -89,14 +89,17 @@ class MyTestCase(unittest.TestCase):
 
         # End measuring time
         end_time_attack = time.time()
+        # print("Time elapsed for setup: " + str(end_time_setup - start_time_setup) + " seconds")
 
-        print("Time elapsed for setup: " + str(end_time_setup - start_time_setup) + " seconds")
-        print("Time elapsed for attack itself: " + str(end_time_attack - start_time_attack) + " seconds")
+        # Time elapsed for attack itself
+        elapsed_time = end_time_attack - start_time_attack
+        # print("Time elapsed for attack itself: " + str(elapsed_time) + " seconds")
+        #
+        # print("Hastad Broadcast Attack Successful")
+        # print("The secret message is: " + str(result))
 
-        print("Hastad Broadcast Attack Successful")
-        print("The secret message is: " + str(result))
-
-
+        # Returning time, useful for experiments call to run this repeatedly
+        return elapsed_time
 
 if __name__ == '__main__':
     unittest.main()

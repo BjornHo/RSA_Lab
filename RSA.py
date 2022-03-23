@@ -97,8 +97,8 @@ def gen_primes(n_bits):
     return prime_list
 
 def gen_user(n_bits, e):
-    print("-------------------")
-    print("Generating user")
+    # print("-------------------")
+    # print("Generating user")
 
     # Start measuring time
     start_time = time.time()
@@ -119,22 +119,22 @@ def gen_user(n_bits, e):
         p, q = gen_primes(int(n_bits/2))
         phi_n = (p-1) * (q-1)
         N = p * q
-    print("Found matching primes, problem solved")
+    # print("Found matching primes, problem solved")
 
     # e * d = 1 mod phi(n)
     # Use extended euclidean algorithm to find d
     _, d, _ = extended_euclidean_v2(e, phi_n)
 
-    print("User generated")
-    print("p = " + str(p))
-    print("q = " + str(q))
-    print("N = " +str(N))
-    print("d = " + str(d))
+    # print("User generated")
+    # print("p = " + str(p))
+    # print("q = " + str(q))
+    # print("N = " +str(N))
+    # print("d = " + str(d))
 
     # End measuring time
     end_time = time.time()
 
-    print("Time elapsed: " + str(end_time - start_time) + " seconds")
+    # print("Time elapsed: " + str(end_time - start_time) + " seconds")
 
     user_x = user(e, d, N)
     return user_x
@@ -150,8 +150,8 @@ def are_coprime(e_list, phi_n):
 # We want users with the same P and Q to get the same modulus
 # This is for the common modulus attack
 def gen_users_sameMod(n_bits, number_users, e_list):
-    print("-------------------")
-    print("Generating users with same modulus")
+    # print("-------------------")
+    # print("Generating users with same modulus")
     # Generate primes p and q, each of n/2 bits
     p, q = gen_primes(int(n_bits/2))
 
@@ -165,12 +165,12 @@ def gen_users_sameMod(n_bits, number_users, e_list):
     # Make sure e and phi(n) are relatively prime/coprime otherwise we cannot encrypt/decrypt properly
     # Small change from gen_user is that all in e_list should have this property
     while not are_coprime(e_list, phi_n):
-        print("gcd(e, phi_n) was not 1, trying again")
+        # print("gcd(e, phi_n) was not 1, trying again")
         p, q = gen_primes(int(n_bits/2))
         N = p * q
         phi_n = (p-1) * (q-1)
 
-    print("Found matching primes, problem solved")
+    # print("Found matching primes, problem solved")
 
     user_list = []
 
@@ -181,11 +181,11 @@ def gen_users_sameMod(n_bits, number_users, e_list):
         _, d_i, _ = extended_euclidean_v2(e_list[i], phi_n)
         user_i = user(e_list[i], d_i, N)
         user_list.append(user_i)
-        print("-------------")
-        print("User " + str(i) + " created")
-        print("e = " + str(user_i.e))
-        print("d = " + str(user_i.d))
-        print("N = " + str(user_i.N))
+        # print("-------------")
+        # print("User " + str(i) + " created")
+        # print("e = " + str(user_i.e))
+        # print("d = " + str(user_i.d))
+        # print("N = " + str(user_i.N))
 
     return user_list
 
