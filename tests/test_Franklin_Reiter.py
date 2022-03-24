@@ -14,14 +14,13 @@ import unittest
 class MyTestCase(unittest.TestCase):
     def test_Franklin_Reiter(self):
 
-        # Generate users with the same modulus
+        # Generate user
         n_bits = 1024
-        num_users = 2
-        e_list = [3, 3]
-        user_list = gen_users_sameMod(n_bits, num_users, e_list)
+        e = 3
+        user = gen_user(n_bits, e)
 
         # Modulus
-        N = user_list[0].N
+        N = user.N
 
         # Let m_1 != m_2
         # m_1 = f(m_2) mod N , for  f = a * x + b in Z_n[x] with b != 0
@@ -50,11 +49,11 @@ class MyTestCase(unittest.TestCase):
 
         # Use int(f(m_2)) to prevent segmentation fault. Sage and Python conversion
         # c_1 = (m_1)^e mod N = f(m_2)^e mod N
-        c_1 = encrypt(int(f(m_2)), user_list[0].e, N)
-        c_2 = encrypt(m_2, user_list[1].e, N)
+        c_1 = encrypt(int(f(m_2)), e, N)
+        c_2 = encrypt(m_2, e, N)
 
         # Execute the attack
-        result = Franklin_Reiter_Attack(c_1, c_2, user_list[0].e, user_list[1].e, f, N)
+        result = Franklin_Reiter_Attack(c_1, c_2, e, f, N)
 
         self.assertEqual(m_2, result)
         print()
