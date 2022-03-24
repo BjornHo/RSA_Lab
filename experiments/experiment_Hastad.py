@@ -6,6 +6,10 @@ sys.path.insert(0, parent_dir)
 
 from tests.test_Hastad import MyTestCase
 import statistics
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
 
 def write_result(file_name, result):
     f = open(file_name, "a")
@@ -21,18 +25,44 @@ def run_experiment():
         elapsed_time = experiment.test_Hastad_BCA()
         write_result("hastad_e13.txt", elapsed_time)
 
-# We calculate statistics over the results
-def calculate_statistics():
-    f = open("hastad_e13.txt", 'r')
-    lines = f.readlines()
-    results = []
-    for line in lines:
-        results.append(float(line.strip()))
+# We calculate statistics
+def calculate_statistics(values):
+    mean = statistics.mean(values)
+    std = statistics.stdev(values)
+    return mean, std
 
-    print("The mean is: " + str(statistics.mean(results)))
-    print("The STD is: " + str(statistics.stdev(results)))
+def make_plots():
+    file_e_list = [3, 7, 11, 13]
+    mean_values = []
+    std_values = []
+
+    # Loop through all hastad_e<nr>.txt files and get the results for each e.
+    for current_e in file_e_list:
+        f = open("hastad_e" + str(current_e) + str(".txt"), "r")
+        lines = f.readlines()
+        results = []
+        for line in lines:
+            results.append(float(line.strip()))
+
+        # Calculate mean and std for each e
+        mean, std = calculate_statistics(results)
+        mean_values.append(mean)
+        std_values.append(std)
+        f.close()
+
+    # Code to plot the graph
+    x = np.array(file_e_list)
+    y = np.array(mean_values)
+    e = np.array(std_values)
+
+    plt.errorbar(x, y, e, linestyle='None', marker='.')
+    plt.xlabel("Public exponent e")
+    plt.ylabel("Mean runtime in seconds")
+    plt.title("Runtime performance for Hastad Broadcast Attack")
+    plt.xticks(x, x)
+    plt.savefig("Hastad_runtime.pdf")
+    #plt.plot()
 
 
+make_plots()
 #run_experiment()
-
-calculate_statistics()
