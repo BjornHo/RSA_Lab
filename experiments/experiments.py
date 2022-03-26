@@ -28,10 +28,10 @@ def run_experiment_hastad():
 
 # Run experiment 100 times for Franklin-Reiter
 def run_experiment_fr():
-    for i in range(1):
+    for i in range(100):
         experiment = fr_Test()
         elapsed_time = experiment.test_Franklin_Reiter()
-        write_result("fr_e65537.txt", elapsed_time)
+        write_result("fr_e.txt", elapsed_time)
 
 # We calculate statistics
 def calculate_statistics(values):
@@ -75,5 +75,4 @@ def make_plots_hastad():
 
 #run_experiment_hastad()
 #make_plots_hastad()
-
-run_experiment_fr()
+#run_experiment_fr()

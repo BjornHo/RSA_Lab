@@ -16,7 +16,7 @@ class MyTestCase(unittest.TestCase):
 
         # Generate user
         n_bits = 1024
-        e = 65537
+        e = 3
         user = gen_user(n_bits, e)
 
         # Modulus
