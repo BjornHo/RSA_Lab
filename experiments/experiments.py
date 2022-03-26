@@ -4,7 +4,8 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
-from tests.test_Hastad import MyTestCase
+from tests.test_Hastad import MyTestCase as hastad_Test
+from tests.test_Franklin_Reiter import MyTestCase as fr_Test
 import statistics
 import matplotlib
 matplotlib.use('Agg')
@@ -19,11 +20,18 @@ def write_result(file_name, result):
 # Run experiment 100 times and write elapsed time to txt file
 # We adjust e and num_users in test_Hastad accordingly
 # And epsilon=1/13 for e=11 and epsilon=1/15 for e=13 in small_roots(epsilon=...) in Hastad
-def run_experiment():
+def run_experiment_hastad():
     for i in range(100):
-        experiment = MyTestCase()
+        experiment = hastad_Test()
         elapsed_time = experiment.test_Hastad_BCA()
-        write_result("hastad_e13.txt", elapsed_time)
+        write_result("hastad_e.txt", elapsed_time)
+
+# Run experiment 100 times for Franklin-Reiter
+def run_experiment_fr():
+    for i in range(1):
+        experiment = fr_Test()
+        elapsed_time = experiment.test_Franklin_Reiter()
+        write_result("fr_e65537.txt", elapsed_time)
 
 # We calculate statistics
 def calculate_statistics(values):
@@ -31,7 +39,7 @@ def calculate_statistics(values):
     std = statistics.stdev(values)
     return mean, std
 
-def make_plots():
+def make_plots_hastad():
     file_e_list = [3, 7, 11, 13]
     mean_values = []
     std_values = []
@@ -64,5 +72,8 @@ def make_plots():
     #plt.plot()
 
 
-make_plots()
-#run_experiment()
+
+#run_experiment_hastad()
+#make_plots_hastad()
+
+run_experiment_fr()

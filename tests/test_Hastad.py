@@ -33,8 +33,8 @@ class MyTestCase(unittest.TestCase):
         c_list = []
 
         message = 1337
-        e = 13
-        num_users = 14
+        e = 3
+        num_users = 4
 
         # Generate users
         for _ in range(num_users):
