@@ -63,16 +63,48 @@ def make_plots_hastad():
     y = np.array(mean_values)
     e = np.array(std_values)
 
-    plt.errorbar(x, y, e, linestyle='None', marker='.')
+    values = range(len(x))
+    plt.errorbar(values, y, e, linestyle='None', marker='.')
     plt.xlabel("Public exponent e")
     plt.ylabel("Mean runtime in seconds")
     plt.title("Runtime performance for Hastad Broadcast Attack")
-    plt.xticks(x, x)
+    plt.xticks(values, x)
     plt.savefig("Hastad_runtime.pdf")
     #plt.plot()
 
+def make_plots_fr():
+    file_e_list = [3, 7, 419, 1993, 5003]
+    mean_values = []
+    std_values = []
 
+    # Loop through all fr_e<nr>.txt files and get the results for each e.
+    for current_e in file_e_list:
+        f = open("fr_e" + str(current_e) + str(".txt"), "r")
+        lines = f.readlines()
+        results = []
+        for line in lines:
+            results.append(float(line.strip()))
+
+        # Calculate mean and std for each e
+        mean, std = calculate_statistics(results)
+        mean_values.append(mean)
+        std_values.append(std)
+        f.close()
+
+    # Code to plot the graph
+    x = np.array(file_e_list)
+    y = np.array(mean_values)
+    e = np.array(std_values)
+
+    values = range(len(x))
+    plt.errorbar(values, y, e, linestyle='None', marker='.')
+    plt.xlabel("Public exponent e")
+    plt.ylabel("Mean runtime in seconds")
+    plt.title("Runtime performance for Franklin-Reiter Related Message Attack")
+    plt.xticks(values, x)
+    plt.savefig("Fr_runtime.pdf")
 
 #run_experiment_hastad()
-#make_plots_hastad()
 #run_experiment_fr()
+#make_plots_hastad()
+#make_plots_fr()
