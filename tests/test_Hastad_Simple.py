@@ -1,7 +1,16 @@
+#! /usr/bin/sage -python
+
+import os
+import sys
+import inspect
+
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir)
+
 import unittest
 from RSA import *
 from exploits.Hastad_Simple import Hastad_BCA_Simple
-
 
 class MyTestCase(unittest.TestCase):
     def test_Hastad_Simple(self):
@@ -10,12 +19,12 @@ class MyTestCase(unittest.TestCase):
         modulus_list = []
         e = 3
         num_users = 3
-        message = 1053453435454335435435435425245255210534534354543354354354354252452552105345343545433543543543542525454335435434354354252452552105345343545433543543543542524525525255210534534354543354354354354252452552105345343545433543543543542524525525255210352525252532542624653626262525252525325
+        message = 1337
+
         # Generate users
         for _ in range(num_users):
             user_i = gen_user(1024, e)
             user_list.append(user_i)
-            print(user_i.N)
 
         # Encrypt for all recipients and gather modulus
         for user_i in user_list:
@@ -23,6 +32,7 @@ class MyTestCase(unittest.TestCase):
             ciphertext_list.append(ciphertext)
             modulus_list.append(user_i.N)
 
+        print()
         print("Message: " + str(message) + " is encrypted for all receivers")
         start_time_do_attack = time.time()
         result = Hastad_BCA_Simple(ciphertext_list, modulus_list, e)

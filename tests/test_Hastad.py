@@ -1,17 +1,14 @@
 #! /usr/bin/sage -python
 
-
-import os,sys,inspect
-import random
-
-from gmpy2 import mpz
+import os
+import sys
+import inspect
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
 import unittest
-import secrets
 from RSA import *
 from exploits.Hastad import Hastad_BCA
 from sage.all import *
