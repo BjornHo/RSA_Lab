@@ -97,8 +97,8 @@ def gen_primes(n_bits):
     return prime_list
 
 def gen_user(n_bits, e):
-    # print("-------------------")
-    # print("Generating user")
+    print("-------------------")
+    print("Generating user")
 
     # Start measuring time
     start_time = time.time()
@@ -125,16 +125,16 @@ def gen_user(n_bits, e):
     # Use extended euclidean algorithm to find d
     _, d, _ = extended_euclidean_v2(e, phi_n)
 
-    # print("User generated")
-    # print("p = " + str(p))
-    # print("q = " + str(q))
-    # print("N = " +str(N))
-    # print("d = " + str(d))
+    print("User generated")
+    print("p = " + str(p))
+    print("q = " + str(q))
+    print("N = " +str(N))
+    print("d = " + str(d))
 
     # End measuring time
     end_time = time.time()
 
-    # print("Time elapsed: " + str(end_time - start_time) + " seconds")
+    print("Time elapsed: " + str(end_time - start_time) + " seconds")
 
     user_x = user(e, d, N)
     return user_x
