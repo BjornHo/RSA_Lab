@@ -1,13 +1,6 @@
-import binascii
 import math
 import secrets
 import time
-
-import sympy
-from mpmath import *
-from sympy import Poly, solveset, GF
-from sympy.abc import x
-from sympy import monic
 
 # A user that is participating in the RSA game
 # (e,N) is the public key pair
@@ -18,12 +11,10 @@ class user:
         self.d = d
         self.N = N
 
-
 # Miller Rabin Primality test
 # n = prime candidate
 # k = number of rounds
 # Returns true if probably prime, false for composite number
-
 def miller_rabin(n, k):
     if n == 1 or n == 2 or n == 3:
         return True
@@ -93,7 +84,6 @@ def gen_primes(n_bits):
                 prime_list = []
                 # Mission failed, search for two new primes
                 continue
-
     return prime_list
 
 def gen_user(n_bits, e):
@@ -189,16 +179,13 @@ def gen_users_sameMod(n_bits, number_users, e_list):
 
     return user_list
 
-
 def encrypt(message, e, N):
     ciphertext = pow(message, e, N)
     return ciphertext
 
-
 def decrypt(ciphertext, d, N):
     message = pow(ciphertext, d, N)
     return message
-
 
 # Recursive extended euclidean algorithm
 # Returns (d,x,y) such that d=gcd(a,b) and d=x * a + y * b
@@ -273,29 +260,3 @@ def CRT(list_n_i, list_b_i):
         x += list_b_i[k] * list_N_i[k] * list_x_i[k]
 
     return x % N
-
-
-
-
-
-
-
-
-
-def main():
-    pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-if __name__ == "__main__":
-    main()
